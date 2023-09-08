@@ -12,7 +12,7 @@ import PlacePage from "./pages/PlacePage";
 import BookingsPage from "./pages/BookingsPage";
 import BookingPage from "./pages/BookingPage";
 
-axios.defaults.baseURL = "http://localhost:4000";
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
 axios.defaults.withCredentials = true;
 
 function App() {
@@ -35,8 +35,5 @@ function App() {
     </BrowserRouter>
   );
 }
-// 3.39
-// 4.45  4.33
-// 5
-// 5.35
+
 export default App;
