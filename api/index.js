@@ -15,8 +15,8 @@ const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 require("dotenv").config();
 const app = express();
 
-const salt = bcrypt.genSaltSync(10);
-const jwtSecret = process.env.JWT_SECRET;
+const bcryptSalt = bcrypt.genSaltSync(10);
+const jwtSecret = "fasdeccd777rgt785fvbgnjk";
 const bucket = "chihab-booking-app";
 
 app.use(express.json());
