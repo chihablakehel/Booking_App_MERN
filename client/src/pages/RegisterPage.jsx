@@ -1,24 +1,38 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import axios from "axios";
+import { useGlobalContext } from "../context";
 const RegisterPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [redirect, setRedirect] = useState(false);
+  const { user, setUser } = useGlobalContext();
 
   const register = async (ev) => {
     ev.preventDefault();
     try {
-      await axios.post("/register", {
+      if (!name || !email || !password) {
+        return alert("Please, Fill all fields");
+      }
+      const { data } = await axios.post("/register", {
         name,
         email,
         password,
       });
+      setUser(data);
       alert("Registration successful. welcome to Airbnb clone");
+      setRedirect(true);
     } catch (error) {
       alert("Registration failed! Try again later");
     }
   };
+
+  if (redirect) {
+    return <Navigate to={"/"} />;
+  }
+
+
   return (
     <div className="grow flex items-center justify-around">
       <div className=" mb-32">

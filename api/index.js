@@ -62,21 +62,23 @@ function getUserDataFromReq(req) {
 }
 
 app.get("/api/test", (req, res) => {
+  mongoose.connect(process.env.MONGO_URL);
   res.json("test ok");
 });
 
 app.post("/api/register", async (req, res) => {
   mongoose.connect(process.env.MONGO_URL);
   const { name, email, password } = req.body;
+
   try {
-    const user = await User.create({
+    const userDoc = await User.create({
       name,
       email,
-      password: bcrypt.hashSync(password, salt),
+      password: bcrypt.hashSync(password, bcryptSalt),
     });
-    res.json(user);
-  } catch (error) {
-    res.status(422).json(error);
+    res.json(userDoc);
+  } catch (e) {
+    res.status(422).json(e);
   }
 });
 
@@ -113,8 +115,8 @@ app.get("/api/profile", (req, res) => {
   if (token) {
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
       if (err) throw err;
-      const { name, email, id } = await User.findById(userData.id);
-      res.json({ name, email, id });
+      const { name, email, _id } = await User.findById(userData.id);
+      res.json({ name, email, _id });
     });
   } else {
     res.json(null);
@@ -143,18 +145,13 @@ app.post("/api/upload-by-link", async (req, res) => {
 const photosMiddleware = multer({ dest: "/tmp" });
 app.post(
   "/api/upload",
-  photosMiddleware.array("photo", 100),
+  photosMiddleware.array("photos", 100),
   async (req, res) => {
     const uploadedFiles = [];
     for (let i = 0; i < req.files.length; i++) {
       const { path, originalname, mimetype } = req.files[i];
       const url = await uploadToS3(path, originalname, mimetype);
       uploadedFiles.push(url);
-      // const parts = originalname.split(".");
-      // const ext = parts[parts.length - 1];
-      // const newPath = path + "." + ext;
-      // fs.renameSync(path, newPath);
-      // uploadedFiles.push(newPath.replace("uploads\\", ""));
     }
     res.json(uploadedFiles);
   }
@@ -166,29 +163,29 @@ app.post("/api/places", (req, res) => {
   const {
     title,
     address,
-    addeddPhotos,
-    perks,
+    addedPhotos,
     description,
+    price,
+    perks,
     extraInfo,
     checkIn,
     checkOut,
     maxGuests,
-    price,
   } = req.body;
   jwt.verify(token, jwtSecret, {}, async (err, userData) => {
     if (err) throw err;
     const placeDoc = await Place.create({
       owner: userData.id,
+      price,
       title,
       address,
-      photos: addeddPhotos,
-      perks,
+      photos: addedPhotos,
       description,
+      perks,
       extraInfo,
       checkIn,
       checkOut,
       maxGuests,
-      price,
     });
     res.json(placeDoc);
   });
@@ -216,9 +213,9 @@ app.put("/api/places", async (req, res) => {
     id,
     title,
     address,
-    addeddPhotos,
-    perks,
+    addedPhotos,
     description,
+    perks,
     extraInfo,
     checkIn,
     checkOut,
@@ -232,16 +229,16 @@ app.put("/api/places", async (req, res) => {
       placeDoc.set({
         title,
         address,
-        photos: addeddPhotos,
-        perks,
+        photos: addedPhotos,
         description,
+        perks,
         extraInfo,
         checkIn,
         checkOut,
         maxGuests,
         price,
       });
-      placeDoc.save();
+      await placeDoc.save();
       res.json("ok");
     }
   });
