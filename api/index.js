@@ -194,10 +194,14 @@ app.post("/api/places", (req, res) => {
 app.get("/api/user-places", (req, res) => {
   mongoose.connect(process.env.MONGO_URL);
   const { token } = req.cookies;
-  jwt.verify(token, jwtSecret, {}, async (err, userData) => {
-    const { id } = userData;
-    res.json(await Place.find({ owner: id }));
-  });
+  if (token) {
+    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+      const { id } = userData;
+      res.json(await Place.find({ owner: id }));
+    });
+  } else {
+    res.json(null);
+  }
 });
 
 app.get("/api/places/:id", async (req, res) => {
@@ -274,8 +278,15 @@ app.post("/api/bookings", async (req, res) => {
 
 app.get("/api/bookings", async (req, res) => {
   mongoose.connect(process.env.MONGO_URL);
-  const userData = await getUserDataFromReq(req);
-  res.json(await Booking.find({ user: userData.id }).populate("place"));
+  const { token } = req.cookies;
+  if (token) {
+    jwt.verify(req.cookies.token, jwtSecret, {}, async (err, userData) => {
+      if (err) throw err;
+      res.json(await Booking.find({ user: userData.id }).populate("place"));
+    });
+  } else {
+    res.json(null);
+  }
 });
 const port = process.env.PORT || 4000;
 
