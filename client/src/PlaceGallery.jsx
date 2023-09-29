@@ -31,10 +31,10 @@ export default function PlaceGallery({place}) {
   return (
     <div className="relative">
       <div className="grid gap-2 grid-cols-[2fr_1fr] rounded-3xl overflow-hidden">
-        <div>
+        <div className="">
           {place.photos?.[0] && (
-            <div>
-              <Image onClick={() => setShowAllPhotos(true)} className="aspect-square cursor-pointer object-cover" src={place.photos[0]} alt=""/>
+            <div className="w-full">
+              <Image onClick={() => setShowAllPhotos(true)} className="w-full aspect-square cursor-pointer object-cover" src={place.photos[0]} alt=""/>
             </div>
           )}
         </div>
