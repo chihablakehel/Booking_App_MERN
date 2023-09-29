@@ -1,15 +1,14 @@
 import { Navigate, useParams } from "react-router-dom";
 import AccountNav from "../AccountNav";
 import Perks from "../Perks";
-import PhotosUploader from "../PhotosUploader";
+import PhotosUploader from "../PhotosUploader.jsx";
 import axios from "axios";
-
 import { useEffect, useState } from "react";
 const PlacesFormPage = () => {
   const { id } = useParams();
   const [title, setTitle] = useState("");
   const [address, setAddress] = useState("");
-  const [addeddPhotos, setAddedPhotos] = useState([]);
+  const [addedPhotos, setAddedPhotos] = useState([]);
   const [description, setDescription] = useState("");
   const [perks, setPerks] = useState([]);
   const [extraInfo, setExtraInfo] = useState("");
@@ -58,7 +57,7 @@ const PlacesFormPage = () => {
     const placeData = {
       title,
       address,
-      addeddPhotos,
+      addedPhotos,
       perks,
       description,
       extraInfo,
@@ -105,7 +104,7 @@ const PlacesFormPage = () => {
           onChange={(ev) => setAddress(ev.target.value)}
         />
         {preInput("Photos", "The more is the better")}
-        <PhotosUploader addeddPhotos={addeddPhotos} onChange={setAddedPhotos} />
+        <PhotosUploader addeddPhotos={addedPhotos} onChange={setAddedPhotos} />
         {preInput("Description", "Description of the place")}
         <textarea
           value={description}

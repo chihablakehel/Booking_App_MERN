@@ -140,6 +140,7 @@ app.post("/api/upload-by-link", async (req, res) => {
     mime.lookup("/tmp/" + newName)
   );
   res.json(url);
+  console.log(url);
 });
 
 const photosMiddleware = multer({ dest: "/tmp" });
@@ -154,6 +155,7 @@ app.post(
       uploadedFiles.push(url);
     }
     res.json(uploadedFiles);
+    console.log(uploadedFiles);
   }
 );
 
